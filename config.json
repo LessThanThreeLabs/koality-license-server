@@ -1,0 +1,44 @@
+{
+	"server": {
+
+		"private": {
+			"port": 9001
+		},
+
+		"public": {
+			"port": 9002
+		}
+	},
+
+	"modelConnection": {
+		"mysqlConnectionParams": {
+			"host": "koality.ccyddc4gvcz4.us-west-2.rds.amazonaws.com",
+			"database": "license",
+			"user": "lt3",
+			"password": "2st4Diiagaws",
+			"port": "3306"
+		},
+
+		"stripe": {
+			"privateKey:": "sk_test_youOPmNzWg4KYNEbWjNwB2so"
+		}
+	},
+
+	"mailer": {
+		"mailgun": {
+			"name": "koality-license-server",
+			"user": "postmaster@koalitycode.com",
+			"password": "41acnysnz3s9"
+		},
+
+		"logger": {
+			"from": {
+				"name": "Log Mailer",
+				"email": "logmailer@koalitycode.com"
+			},
+			"to": {
+				"email": "logmailer@koalitycode.com"
+			}
+		}
+	}
+}

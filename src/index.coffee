@@ -1,0 +1,45 @@
+fs = require 'fs'
+Logger = require 'koality-logger'
+
+environment = require './environment'
+
+ModelConneciton = require './modelConnection/modelConnection'
+CommandLineParser = require './commandLineParser'
+Mailer = require './mailer/mailer'
+PrivateServer = require './server/privateServer'
+
+startEverything = () ->
+	process.title = 'license-server'
+
+	commandLineParser = CommandLineParser.create()
+
+	configurationParams = getConfiguration commandLineParser.getConfigFile(), 
+		commandLineParser.getMode(),
+		commandLineParser.getPrivatePort(),
+		commandLineParser.getPublicPort()
+
+	environment.setEnvironmentMode configurationParams.mode
+
+	mailer = Mailer.create configurationParams.mailer
+
+	logger = Logger.create mailer.logger, 'warn'
+
+	process.on 'uncaughtException', (error) ->
+		logger.error error, true
+		setTimeout (() -> process.exit 1), 10000
+
+	modelConnection = ModelConneciton.create configurationParams.modelConnection, logger
+
+	privateServer = PrivateServer.create configurationParams.server.private, modelConnection, logger
+	privateServer.start()
+
+
+getConfiguration = (configFileLocation = './config.json', mode, privatePort, publicPort) ->
+	config = JSON.parse(fs.readFileSync configFileLocation, 'ascii')
+	if mode? then config.mode = mode
+	if privatePort? then config.server.private.port = privatePort
+	if publicPort? then config.server.public.port = publicPort
+	return Object.freeze config
+
+
+startEverything()
