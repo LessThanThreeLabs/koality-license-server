@@ -2,6 +2,8 @@ fs = require 'fs'
 assert = require 'assert'
 mysql = require 'mysql'
 
+Stripe = require 'stripe'
+
 LicenseMetadataConnection = require './helpers/licenseMetadataConnection'
 LicenseTypeConnection = require './helpers/licenseTypeConnection'
 LicenseValidationConnection = require './helpers/licenseValidationConnection'
@@ -21,10 +23,8 @@ class ModelConnection
 
 
 	initialize: () =>
-		@stripe = new Stripe configurationParams.stripe.privateKey
+		@stripe = new Stripe @configurationParams.stripe.privateKey
 		@sqlPool = mysql.createPool @configurationParams.mysqlConnectionParams
-		@sqlPool.on 'error', (error) =>
-			throw error
 
 		@metadata = LicenseMetadataConnection.create @configurationParams, @sqlPool, @stripe, @logger
 		@type = LicenseTypeConnection.create @configurationParams, @sqlPool, @stripe, @logger
@@ -38,12 +38,13 @@ class ModelConnection
 					statement = statement.trim()
 					continue if statement is ''
 
-					@sqlPool.getConnection (error, connection) =>
-						throw error if error?
+					do (statement) =>
+						@sqlPool.getConnection (error, connection) =>
+							throw error if error?
 
-						connection.query statement, (statementError, statementResult) =>
-							connection.end()
-							throw statementError if statementError?
+							connection.query statement, (statementError, statementResult) =>
+								connection.end()
+								throw statementError if statementError?
 
 
 	generateLicenseKey: (licenseType, callback) =>

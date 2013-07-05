@@ -55,6 +55,3 @@ class LicenseTypeConnection
 					setLicenseTypeInStripe license, stripeCustomer, (error) =>
 						if error? then callback error
 						else setLicenseTypeInDb license, permissions, callback
-
-
-	
