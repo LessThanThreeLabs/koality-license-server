@@ -19,6 +19,8 @@
 	},
 
 	"modelConnection": {
+		"schemaFile": "schema.sql",
+
 		"mysqlConnectionParams": {
 			"host": "koality.ccyddc4gvcz4.us-west-2.rds.amazonaws.com",
 			"database": "license",
@@ -28,7 +30,8 @@
 		},
 
 		"stripe": {
-			"privateKey:": "sk_test_youOPmNzWg4KYNEbWjNwB2so"
+			"privateKey:": "sk_test_youOPmNzWg4KYNEbWjNwB2so",
+			"planVersion": 0
 		}
 	},
 

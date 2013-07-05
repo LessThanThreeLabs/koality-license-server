@@ -13,8 +13,7 @@ exports.create = (serverConfigurationParams, modelConnection, logger) ->
 
 
 class PublicServer
-
-	constructor: (@configurationParams, @modelConnection, @logger, @licenseKeySanitizer) ->
+ 	constructor: (@configurationParams, @modelConnection, @logger, @licenseKeySanitizer) ->
 		assert.ok @configurationParams? and typeof @configurationParams is 'object'
 		assert.ok @modelConnection? and typeof @modelConnection is 'object'
 		assert.ok @logger? and typeof @logger is 'object'
