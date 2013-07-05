@@ -7,6 +7,7 @@ ModelConneciton = require './modelConnection/modelConnection'
 CommandLineParser = require './commandLineParser'
 Mailer = require './mailer/mailer'
 PrivateServer = require './server/privateServer'
+PublicServer = require './server/publicServer'
 
 startEverything = () ->
 	process.title = 'license-server'
@@ -32,6 +33,9 @@ startEverything = () ->
 
 	privateServer = PrivateServer.create configurationParams.server.private, modelConnection, logger
 	privateServer.start()
+
+	publicServer = PublicServer.create configurationParams.server.public, modelConnection, logger
+	publicServer.start()
 
 
 getConfiguration = (configFileLocation = './config.json', mode, privatePort, publicPort) ->
