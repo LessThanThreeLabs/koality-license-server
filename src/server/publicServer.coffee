@@ -53,21 +53,21 @@ class PublicServer
 		else if not serverId? then response.send 400, 'Invalid server id'
 		else if not userCount? then response.send 400, 'Invalid user count'
 		else 
-			@modelConnection.validateLicenseKey licenseKey, serverId, (error, licenseResult) =>
+			@modelConnection.validation.validateLicenseKey licenseKey, serverId, (error, licenseResult) =>
 				if error?
 					@logger.error error
 					response.send 500, 'Internal error'
 				else if not licenseResult.isValid
 					response.json licenseResult
 				else
-					@modelConnection.getLicensePermissions licenseKey, (error, permissions) ->
+					@modelConnection.permissions.getLicensePermissions licenseKey, (error, permissions) ->
 						if error?
 							@logger.error error
 							response.send 500, 'Internal error'
 						else
 							licenseResult.permissions = permissions
 
-							@modelConnection.updateLicenseMetadata licenseKey, {userCount: userCount}, (error) ->
+							@modelConnection.metadata.updateLicenseMetadata licenseKey, {userCount: userCount}, (error) ->
 								if error?
 									@logger.error error
 									response.send 500, 'Internal error'

@@ -5,7 +5,6 @@ mysql = require 'mysql'
 Stripe = require 'stripe'
 
 LicenseMetadataConnection = require './helpers/licenseMetadataConnection'
-LicenseTypeConnection = require './helpers/licenseTypeConnection'
 LicenseValidationConnection = require './helpers/licenseValidationConnection'
 LicensePermissionsConnection = require './helpers/licensePermissionsConnection'
 
@@ -27,7 +26,6 @@ class ModelConnection
 		@sqlPool = mysql.createPool @configurationParams.mysqlConnectionParams
 
 		@metadata = LicenseMetadataConnection.create @configurationParams, @sqlPool, @stripe, @logger
-		@type = LicenseTypeConnection.create @configurationParams, @sqlPool, @stripe, @logger
 		@validation = LicenseValidationConnection.create @configurationParams, @sqlPool, @stripe, @logger
 		@permissions = LicensePermissionsConnection.create @configurationParams, @sqlPool, @stripe, @logger
 
