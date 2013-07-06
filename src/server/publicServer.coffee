@@ -29,6 +29,7 @@ class PublicServer
 		expressServer = express()
 		expressServer.use express.query()
 		expressServer.use express.bodyParser()
+		addProjectBindings()
 
 		await
 			fs.readFile @configurationParams.certificates.location + '/key.pem', defer keyError, key
@@ -44,7 +45,7 @@ class PublicServer
 		console.log "PUBLIC SERVER STARTED on port #{@configurationParams.port}".bold.magenta
 
 
-	_licenseCheckHandler: () =>
+	_licenseCheckHandler: (request, response) =>
 		licenseKey = @licenseKeySanitizer.getSanitizedKey request.query?.licenseKey
 		serverId = request.query?.serverId
 		userCount = request.query?.userCount

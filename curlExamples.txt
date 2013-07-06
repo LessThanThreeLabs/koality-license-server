@@ -1,0 +1,21 @@
+||==================================================||
+||                 PUBLIC SERVER                    ||
+||==================================================||
+
+404
+curl --request GET --insecure 'https://127.0.0.1:9002/'
+curl --request GET --insecure 'https://127.0.0.1:9002/blah'
+
+CHECK LICENSE KEY
+curl --request GET --insecure 'https://127.0.0.1:9002/license/check'
+curl --request GET --insecure 'https://127.0.0.1:9002/license/check?licenseKey=1111-2222-3333-4444&serverId=17&userCount=100'
+
+
+
+
+
+||==================================================||
+||                 PRIVATE SERVER                   ||
+||==================================================||
+
+

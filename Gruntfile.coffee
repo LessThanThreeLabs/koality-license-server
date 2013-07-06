@@ -25,6 +25,9 @@ module.exports = (grunt) ->
 			runServerProduction:
 				command: 'node --harmony <%= compiledDirectory %>/index.js --mode production'
 
+			killServer:
+				command: "pgrep -f '^node --harmony libs/index.js' | xargs kill"
+
 			removeCompile:
 				command: 'rm -rf <%= compiledDirectory %>'
 
@@ -67,6 +70,12 @@ module.exports = (grunt) ->
 			test:
 				files: ['<%= sourceDirectory %>/**/*.coffee', '<%= testDirectory %>/**/*.spec.coffee']
 				tasks: ['compile', 'test']
+
+			run:
+				files: ['<%= sourceDirectory %>/**/*.coffee', '<%= testDirectory %>/**/*.spec.coffee']
+				tasks: ['shell:killServer', 'compile', 'run']
+				options:
+					interrupt: true
 
 	grunt.loadNpmTasks 'grunt-contrib-uglify'
 	grunt.loadNpmTasks 'grunt-contrib-watch'

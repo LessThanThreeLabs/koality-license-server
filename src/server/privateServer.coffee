@@ -32,6 +32,7 @@ class PrivateServer
 		expressServer = express()
 		expressServer.use express.query()
 		expressServer.use express.bodyParser()
+		addProjectBindings()
 
 		await
 			fs.readFile @configurationParams.certificates.location + '/key.pem', defer keyError, key
@@ -112,7 +113,7 @@ class PrivateServer
 				else response.send 'ok'
 
 
-	_licenseCheckHandler: () =>
+	_licenseCheckHandler: (request, response) =>
 		licenseKey = @licenseKeySanitizer.getSanitizedKey request.query?.licenseKey
 		serverId = request.query?.serverId
 
