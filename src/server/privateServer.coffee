@@ -53,7 +53,7 @@ class PrivateServer
 
 		if not licenseKey? then response.send 400, 'Invalid license key'
 		else
-			@modelConnection.getLicenseFromKey licenseKey, (error, license) ->
+			@modelConnection.getLicenseFromKey licenseKey, (error, license) =>
 				if error?
 					@logger.error error
 					response.send 500, error
@@ -80,17 +80,17 @@ class PrivateServer
 
 		if not licenseType? then response.send 400, 'Invalid license type'
 		else 
-			@modelConnection.permissions.getPermissionsFromLicenseType licenseType, (error, permissions) ->
+			@modelConnection.permissions.getPermissionsFromLicenseType licenseType, (error, permissions) =>
 				if error?
 					@logger.error error
 					response.send 500, error
 				else
-					@modelConnection.generateLicenseKey licenseType, (error, license) ->
+					@modelConnection.generateLicenseKey licenseType, (error, license) =>
 						if error?
 							@logger.error error
 							response.send 500, error
 						else
-							@modelConnection.permissions.updateLicensePermissions license.key, permissions, (error) ->
+							@modelConnection.permissions.updateLicensePermissions license.key, permissions, (error) =>
 								if error?
 									@logger.error error
 									response.send 500, error
@@ -106,7 +106,7 @@ class PrivateServer
 		if not licenseKey? then response.send 400, 'Invalid license key'
 		else if not licenseType? then response.send 400, 'Invalid license type'
 		else 
-			@modelConnection.permissions.setLicenseType licenseKey, licenseType, (error) ->
+			@modelConnection.permissions.setLicenseType licenseKey, licenseType, (error) =>
 				if error?
 					@logger.error error
 					response.send 500, error
@@ -120,7 +120,7 @@ class PrivateServer
 		if not licenseKey? then response.send 400, 'Invalid license key'
 		else if not serverId? then response.send 400, 'Invalid server id'
 		else 
-			@modelConnection.validation.validateLicenseKey licenseKey, serverId, (error, licenseResult) ->
+			@modelConnection.validation.validateLicenseKey licenseKey, serverId, (error, licenseResult) =>
 				if error?
 					@logger.error error
 					response.send 500, 'Internal error'
