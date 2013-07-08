@@ -40,9 +40,11 @@ class LicenseValidationConnection
 			if not serverId?
 				callback null, true
 			else
-				@logger.info 'Registering server: ' + serverId + ' for license key: ' + licenseKey
+				@logger.info 'Registering server: ' + serverId + ' for license key: ' + license.licenseKey
 
-				@_registerServerWithLicenseKey license.key, serverId, (error) =>
+				console.log license
+
+				@_registerServerWithLicenseKey license.licenseKey, serverId, (error) =>
 					if error? then callback error
 					else
 						@_savePing license, (error) =>
@@ -115,7 +117,7 @@ class LicenseValidationConnection
 			if not license.isValid
 				callback null, {isValid: false, reason: 'License key deactivated'}
 			else
-				@_checkServerId license, (error, isValid) =>
+				@_checkServerId license, serverId, (error, isValid) =>
 					if error? then callback error
 					else if not isValid
 						callback null, {isValid: false, reason: 'License key already in use by another instance'}
@@ -123,11 +125,11 @@ class LicenseValidationConnection
 						callback null, {isValid: true, licenseType: license.type, trialExpiration: null, unpaidExpiration: null}
 					else
 						@sqlPool.getConnection (error, connection) =>
-						if error? then callback error
-						else 
-							@_checkPayment connection, license, (error, result) =>
-								connection.end()
-								callback error, result
+							if error? then callback error
+							else 
+								@_checkPayment connection, license, (error, result) =>
+									connection.end()
+									callback error, result
 
 		query = 'SELECT license.id, license.is_valid as isValid, license.server_id as serverId, license.type as type, license.used_trial as usedTrial,
 			license.unpaid_expiration as unpaidExpiration, license.last_ping as lastPing, license.license_key as licenseKey,

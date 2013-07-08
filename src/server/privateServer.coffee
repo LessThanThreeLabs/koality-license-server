@@ -100,17 +100,22 @@ class PrivateServer
 
 
 	_setLicenseTypeHandler: (request, response) =>
-		licenseKey = @licenseKeySanitizer.getSanitizedKey request.query?.licenseKey
-		licenseType = request.body?.type
+		licenseKey = @licenseKeySanitizer.getSanitizedKey request.body?.licenseKey
+		licenseType = request.body?.licenseType
 
 		if not licenseKey? then response.send 400, 'Invalid license key'
 		else if not licenseType? then response.send 400, 'Invalid license type'
 		else 
-			@modelConnection.permissions.setLicenseType licenseKey, licenseType, (error) =>
+			@modelConnection.getLicenseFromKey licenseKey, (error, license) =>
 				if error?
 					@logger.error error
 					response.send 500, error
-				else response.send 'ok'
+				else
+					@modelConnection.permissions.setLicenseType license, licenseType, (error) =>
+						if error?
+							@logger.error error
+							response.send 500, error
+						else response.send 'ok'
 
 
 	_licenseCheckHandler: (request, response) =>

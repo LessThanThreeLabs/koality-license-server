@@ -1,5 +1,6 @@
 fs = require 'fs'
 assert = require 'assert'
+crypto = require 'crypto'
 mysql = require 'mysql'
 
 Stripe = require 'stripe'
@@ -70,7 +71,7 @@ class ModelConnection
 
 
 	getLicenseFromKey: (licenseKey, callback) =>
-		query = 'SELECT id, 
+		query = 'SELECT license.id as id, 
 					account_id as accountId, 
 					license.type as type, 
 					license.used_trial as usedTrial, 
@@ -80,8 +81,7 @@ class ModelConnection
 					account.stripe_customer_id as stripeCustomerId,
 					used_trial as usedTrial, 
 					unpaid_expiration as unpaidExpiration, 
-					last_ping as lastPing, 
-					type
+					last_ping as lastPing
 				FROM license
 				LEFT JOIN account ON
 					license.account_id = account.id WHERE

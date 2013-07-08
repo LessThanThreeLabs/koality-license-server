@@ -87,7 +87,7 @@ class LicensePermissionsConnection
 						else callback()
 
 
-	setLicenseType: (licenseKey, licenseType, callback) =>
+	setLicenseType: (license, licenseType, callback) =>
 		setPlanDataWithOldTrialEnd = (stripeCustomer, planData) =>
 			# Setting the trial end in the past is invalid
 			oneHourFromNow = Math.round(Date.now() / 1000 + (60 * 60))
@@ -120,16 +120,13 @@ class LicensePermissionsConnection
 								if error? then callback error
 								else @updateLicensePermissions license.licenseKey, permissions, callback
 
-		@getLicenseFromKey licenseKey, (error, license) =>
-			if error? then callback error
-			else
-				await 
-					@stripe.customers.retrieve license.stripeCustomerId, defer stripeError, stripeCustomer
-					@getPermissionsFromLicenseType licenseType, defer permissionsError, permissions
+		await 
+			@stripe.customers.retrieve license.stripeCustomerId, defer stripeError, stripeCustomer
+			@getPermissionsFromLicenseType licenseType, defer permissionsError, permissions
 
-				if stripeError? then callback stripeError
-				else if permissionsError? then callback permissionsError
-				else
-					setLicenseTypeInStripe license, stripeCustomer, (error) =>
-						if error? then callback error
-						else setLicenseTypeInDb license, permissions, callback
+		if stripeError? then callback stripeError
+		else if permissionsError? then callback permissionsError
+		else
+			setLicenseTypeInStripe license, stripeCustomer, (error) =>
+				if error? then callback error
+				else setLicenseTypeInDb license, permissions, callback
