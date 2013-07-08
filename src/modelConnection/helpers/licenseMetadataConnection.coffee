@@ -14,10 +14,12 @@ class LicenseMetadataConnection
 
 
 	getLicenseMetadata: (licenseKey, callback) =>
-		query = 'SELECT license_metadata.name as name, license_metadata.value as value FROM license_metadata
-			INNER JOIN license ON
-				license.id = license_metadata.license_id
-				AND license.license_key = ?'
+		query = 'SELECT license_metadata.name as name,
+					license_metadata.value as value
+				FROM license_metadata
+				INNER JOIN license ON
+					license.id = license_metadata.license_id
+					AND license.license_key = ?'
 
 		@sqlPool.getConnection (error, connection) =>
 			if error? then callback error
@@ -39,7 +41,7 @@ class LicenseMetadataConnection
 					query = 'INSERT INTO license_metadata (license_id, name, value) VALUES (?, ?, ?)
 						ON DUPLICATE KEY UPDATE value = ?'
 					@sqlPool.getConnection (error, connection) =>
-						if error? then erros[index] = error
+						if error? then errors[index] = error
 						else 
 							connection.query query, [license.id, name, metadata[name], metadata[name]], defer errors[index]
 							connection.end()
@@ -64,10 +66,13 @@ class LicenseMetadataConnection
 							if error? then callback error
 							else callback()
 
-		query = 'SELECT license.id as id, license.type as type, account.stripe_customer_id as stripeCustomerId FROM license
-			LEFT JOIN account ONE
-			license.account_id = account.id WHERE
-			license_key = ?'
+		query = 'SELECT license.id as id,
+					license.type as type,
+					account.stripe_customer_id as stripeCustomerId 
+				FROM license
+				LEFT JOIN account ON
+					license.account_id = account.id WHERE
+					license_key = ?'
 
 		@sqlPool.getConnection (error, connection) =>
 			if error? then callback error

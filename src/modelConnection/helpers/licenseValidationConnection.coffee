@@ -1,15 +1,16 @@
 assert = require 'assert'
 
 
-exports.create = (configurationParams, sqlPool, stripe, logger) ->
-	return new LicenseValidationConnection configurationParams, sqlPool, stripe, logger
+exports.create = (configurationParams, sqlPool, stripe, licenseTypeSetter, logger) ->
+	return new LicenseValidationConnection configurationParams, sqlPool, stripe, licenseTypeSetter, logger
 
 
 class LicenseValidationConnection
-	constructor: (@configurationParams, @sqlPool, @stripe, @logger) ->
+	constructor: (@configurationParams, @sqlPool, @stripe, @licenseTypeSetter, @logger) ->
 		assert.ok @configurationParams? and typeof @configurationParams is 'object'
 		assert.ok @sqlPool? and typeof @sqlPool is 'object'
 		assert.ok @stripe? and typeof @stripe is 'object'
+		assert.ok @licenseTypeSetter? and typeof @licenseTypeSetter is 'function'
 		assert.ok @logger? and typeof @logger is 'object'
 
 
@@ -60,8 +61,9 @@ class LicenseValidationConnection
 
 	_checkPayment: (sqlConnection, license, callback) =>
 		handleNoSubscription = (license, customer, callback) =>
-			_setLicenseType license, license.type, customer, (error) =>
-				if error? then callback error else callback null, { isValid: true, licenseType: license.type, trialExpiration: null, unpaidExpiration: null }
+			@licenseTypeSetter license, license.type, customer, (error) =>
+				if error? then callback error
+				else callback null, { isValid: true, licenseType: license.type, trialExpiration: null, unpaidExpiration: null }
 
 		handleTrial = (license, customer, callback) =>
 			if customer.active_card?.cvc_check
@@ -71,7 +73,8 @@ class LicenseValidationConnection
 			successResponse = { isValid: true, licenseType: license.type, trialExpiration: customer.subscription.trial_end, unpaidExpiration: unpaidExpiration }
 			if not license.usedTrial
 				sqlConnection.query 'UPDATE license SET used_trial = true WHERE id = ?', [license.id], (error) =>
-					if error? then callback error else callback null, successResponse
+					if error? then callback error
+					else callback null, successResponse
 			else
 				callback null, successResponse
 
@@ -83,7 +86,8 @@ class LicenseValidationConnection
 				callback null, { isValid: false, reason: 'Trial expired' }
 			else if not license.unpaidExpiration?
 				sqlConnection.query 'UPDATE license SET unpaid_expiration = ? WHERE id = ?', [fifteenDaysFromNow, license.id], (error) =>
-					if error? then callback error else callback null, { isValid: true, licenseType: license.type, trialExpiration: null, unpaidExpiration: fifteenDaysFromNow }
+					if error? then callback error
+					else callback null, { isValid: true, licenseType: license.type, trialExpiration: null, unpaidExpiration: fifteenDaysFromNow }
 			else if now > license.unpaidExpiration
 				callback null, { isValid: false, reason: 'Subscription unpaid' }
 			else
@@ -131,12 +135,19 @@ class LicenseValidationConnection
 									connection.end()
 									callback error, result
 
-		query = 'SELECT license.id, license.is_valid as isValid, license.server_id as serverId, license.type as type, license.used_trial as usedTrial,
-			license.unpaid_expiration as unpaidExpiration, license.last_ping as lastPing, license.license_key as licenseKey,
-			account.stripe_customer_id as stripeCustomerId FROM license
-			LEFT JOIN account ON
-			license.account_id = account.id WHERE
-			license_key = ?'
+		query = 'SELECT license.id,
+					license.is_valid as isValid,
+					license.server_id as serverId,
+					license.type as type,
+					license.used_trial as usedTrial,
+					license.unpaid_expiration as unpaidExpiration,
+					license.last_ping as lastPing,
+					license.license_key as licenseKey,
+					account.stripe_customer_id as stripeCustomerId
+				FROM license
+				LEFT JOIN account ON
+					license.account_id = account.id WHERE
+					license_key = ?'
 
 		@sqlPool.getConnection (error, connection) =>
 			if error? then callback error

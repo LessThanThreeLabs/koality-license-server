@@ -27,7 +27,7 @@ class ModelConnection
 		@sqlPool = mysql.createPool @configurationParams.mysqlConnectionParams
 
 		@metadata = LicenseMetadataConnection.create @configurationParams, @sqlPool, @stripe, @logger
-		@validation = LicenseValidationConnection.create @configurationParams, @sqlPool, @stripe, @logger
+		@validation = LicenseValidationConnection.create @configurationParams, @sqlPool, @stripe, @setLicenseType, @logger
 		@permissions = LicensePermissionsConnection.create @configurationParams, @sqlPool, @stripe, @logger
 
 		fs.readFile @configurationParams.schemaFile, 'utf8', (error, schema) =>
@@ -67,7 +67,7 @@ class ModelConnection
 							if error? then callback error
 							else callback null,
 								id: results.insertId,
-								key: licenseKey
+								licenseKey: licenseKey
 
 
 	getLicenseFromKey: (licenseKey, callback) =>
@@ -95,3 +95,47 @@ class ModelConnection
 					if error? then callback error
 					else if results.length isnt 1 then callback 404, 'No such license key'
 					else callback null, results[0]
+
+	setLicenseType: (license, licenseType, callback) =>
+		setPlanDataWithOldTrialEnd = (stripeCustomer, planData) =>
+			# Setting the trial end in the past is invalid
+			oneHourFromNow = Math.round(Date.now() / 1000 + (60 * 60))
+
+			if stripeCustomer.subscription.trial_end < oneHourFromNow then planData.trial_end = 'now'
+			else planData.trial_end = stripeCustomer.subscription.trial_end
+
+		setLicenseTypeInStripe = (license, stripeCustomer, callback) =>
+			planData =
+				plan: licenseType + '_' + @configurationParams.stripe.planVersion
+				quantity: stripeCustomer.subscription?.quantity or 1  # We can't charge for 0 users. Stripe gets mad
+
+			if stripeCustomer.subscription?.trial_end? then setPlanDataWithOldTrialEnd stripeCustomer, planData
+			else if license.usedTrial then planData.trial_end = 'now'
+
+			@stripe.customers.update_subscription license.stripeCustomerId, planData, (error, response) =>
+				if error? then callback error
+				else callback()
+
+		setLicenseTypeInDb = (license, permissions, callback) =>
+			@sqlPool.getConnection (error, connection) =>
+				if error? then callback error
+				else 
+					connection.query 'UPDATE license SET type = ? WHERE license_key = ?', [licenseType, license.licenseKey], (error, results) =>
+						connection.end()
+						if error? then callback error
+						else if results.affectedRows isnt 1 then callback 'License key not found'
+						else
+							@permissions.clearLicensePermissions license, (error) =>
+								if error? then callback error
+								else @permissions.updateLicensePermissions license, permissions, callback
+
+		await 
+			@stripe.customers.retrieve license.stripeCustomerId, defer stripeError, stripeCustomer
+			@permissions.getPermissionsFromLicenseType licenseType, defer permissionsError, permissions
+
+		if stripeError? then callback stripeError
+		else if permissionsError? then callback permissionsError
+		else
+			setLicenseTypeInStripe license, stripeCustomer, (error) =>
+				if error? then callback error
+				else setLicenseTypeInDb license, permissions, callback

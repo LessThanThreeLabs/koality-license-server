@@ -30,7 +30,7 @@
 		},
 
 		"stripe": {
-			"privateKey:": "sk_test_youOPmNzWg4KYNEbWjNwB2so",
+			"privateKey": "sk_test_youOPmNzWg4KYNEbWjNwB2so",
 			"planVersion": 0
 		}
 	},

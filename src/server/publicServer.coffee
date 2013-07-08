@@ -61,14 +61,14 @@ class PublicServer
 				else if not licenseResult.isValid
 					response.json licenseResult
 				else
-					@modelConnection.permissions.getLicensePermissions licenseKey, (error, permissions) ->
+					@modelConnection.permissions.getLicensePermissions licenseKey, (error, permissions) =>
 						if error?
 							@logger.error error
 							response.send 500, 'Internal error'
 						else
 							licenseResult.permissions = permissions
 
-							@modelConnection.metadata.updateLicenseMetadata licenseKey, {userCount: userCount}, (error) ->
+							@modelConnection.metadata.setLicenseMetadata licenseKey, {userCount: userCount}, (error) =>
 								if error?
 									@logger.error error
 									response.send 500, 'Internal error'

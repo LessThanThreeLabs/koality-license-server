@@ -90,12 +90,12 @@ class PrivateServer
 							@logger.error error
 							response.send 500, error
 						else
-							@modelConnection.permissions.updateLicensePermissions license.key, permissions, (error) =>
+							@modelConnection.permissions.updateLicensePermissions license.licenseKey, permissions, (error) =>
 								if error?
 									@logger.error error
 									response.send 500, error
 								else
-									@logger.info 'Successfully generated license key: ' + license.key
+									@logger.info 'Successfully generated license key: ' + license.licenseKey
 									response.json license
 
 
@@ -111,7 +111,7 @@ class PrivateServer
 					@logger.error error
 					response.send 500, error
 				else
-					@modelConnection.permissions.setLicenseType license, licenseType, (error) =>
+					@modelConnection.setLicenseType license, licenseType, (error) =>
 						if error?
 							@logger.error error
 							response.send 500, error
