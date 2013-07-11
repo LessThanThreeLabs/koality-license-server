@@ -1,0 +1,6 @@
+koality.yml
+Gruntfile.coffee
+koality-license-server-*.tgz
+node_modules/
+src/
+test/
