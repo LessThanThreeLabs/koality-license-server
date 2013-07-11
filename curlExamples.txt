@@ -3,12 +3,12 @@
 ||==================================================||
 
 404
-curl --request GET --insecure 'https://127.0.0.1:9002/'
-curl --request GET --insecure 'https://127.0.0.1:9002/blah'
+curl --request GET --insecure 'https://127.0.0.1:9001/'
+curl --request GET --insecure 'https://127.0.0.1:9001/blah'
 
 CHECK LICENSE KEY (called by Koality instances)
-curl --request GET --insecure 'https://127.0.0.1:9002/license/check'
-curl --request GET --insecure 'https://127.0.0.1:9002/license/check?licenseKey=FQYO-WZX1-JU9Q-Z3MG&serverId=17&userCount=100'
+curl --request GET --insecure 'https://127.0.0.1:9001/license/check'
+curl --request GET --insecure 'https://127.0.0.1:9001/license/check?licenseKey=FQYO-WZX1-JU9Q-Z3MG&serverId=17&userCount=100'
 
 
 ||==================================================||
@@ -16,23 +16,23 @@ curl --request GET --insecure 'https://127.0.0.1:9002/license/check?licenseKey=F
 ||==================================================||
 
 404
-curl --request GET --insecure 'https://127.0.0.1:9001/'
-curl --request GET --insecure 'https://127.0.0.1:9001/blah'
+curl --request GET --insecure 'https://127.0.0.1:9002/'
+curl --request GET --insecure 'https://127.0.0.1:9002/blah'
 
 GET LICENSE KEY (called by marketing server)
-curl --request GET --insecure 'https://127.0.0.1:9001/license?licenseKey=FQYO-WZX1-JU9Q-Z3MG'
+curl --request GET --insecure 'https://127.0.0.1:9002/license?licenseKey=FQYO-WZX1-JU9Q-Z3MG'
 
 CHECK LICENSE KEY (called by upgrade server)
-curl --request GET --insecure 'https://127.0.0.1:9001/license/check?serverId=17'
-curl --request GET --insecure 'https://127.0.0.1:9001/license/check?licenseKey=FQYO-WZX1-JU9Q-Z3MG'
-curl --request GET --insecure 'https://127.0.0.1:9001/license/check?licenseKey=FQYO-WZX1-JU9Q-Z3MG&serverId=17'
+curl --request GET --insecure 'https://127.0.0.1:9002/license/check?serverId=17'
+curl --request GET --insecure 'https://127.0.0.1:9002/license/check?licenseKey=FQYO-WZX1-JU9Q-Z3MG'
+curl --request GET --insecure 'https://127.0.0.1:9002/license/check?licenseKey=FQYO-WZX1-JU9Q-Z3MG&serverId=17'
 
 GENERATE LICENSE KEY
-curl --request POST --insecure 'https://127.0.0.1:9001/license/generate'
-curl --request POST --insecure 'https://127.0.0.1:9001/license/generate' --data 'licenseType=bronze'
+curl --request POST --insecure 'https://127.0.0.1:9002/license/generate'
+curl --request POST --insecure 'https://127.0.0.1:9002/license/generate' --data 'licenseType=bronze'
 
 SET LICENSE TYPE
-curl --request PUT --insecure 'https://127.0.0.1:9001/license/type'
-curl --request PUT --insecure 'https://127.0.0.1:9001/license/type' --data 'licenseType=silver'
-curl --request PUT --insecure 'https://127.0.0.1:9001/license/type' --data 'licenseKey=FQYO-WZX1-JU9Q-Z3MG'
-curl --request PUT --insecure 'https://127.0.0.1:9001/license/type' --data 'licenseKey=FQYO-WZX1-JU9Q-Z3MG&licenseType=silver'
+curl --request PUT --insecure 'https://127.0.0.1:9002/license/type'
+curl --request PUT --insecure 'https://127.0.0.1:9002/license/type' --data 'licenseType=silver'
+curl --request PUT --insecure 'https://127.0.0.1:9002/license/type' --data 'licenseKey=FQYO-WZX1-JU9Q-Z3MG'
+curl --request PUT --insecure 'https://127.0.0.1:9002/license/type' --data 'licenseKey=FQYO-WZX1-JU9Q-Z3MG&licenseType=silver'

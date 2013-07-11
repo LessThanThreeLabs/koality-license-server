@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS account (
 	id INT NOT NULL AUTO_INCREMENT,
-	email VARCHAR(320) NOT NULL,
+	email VARCHAR(255) NOT NULL,
 	password_hash VARCHAR(100),
 	password_salt VARCHAR(64),
 	first_name VARCHAR(64),

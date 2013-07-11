@@ -28,12 +28,15 @@ class LicenseServerCircusRunner(object):
 		except:
 			raise Exception("Cannot retrieve user information")
 
+		if not os.access(self.log_directory, os.F_OK):
+			os.makedirs(self.log_directory)
+
 		self.watchers = [
 			# LICENSE SERVER
 			Watcher(
 				name='license-server',
-				cmd=os.path.join(self.root_directory, 'node_modules', 'iced-coffee-script', 'bin', 'coffee'),
-				args=[os.path.join(self.root_directory, 'server.coffee')],
+				cmd='/usr/bin/node',
+				args=['--harmony', os.path.join(self.root_directory, 'libs', 'index.js'), '--mode', 'production'],
 				working_dir=self.root_directory,
 				stdout_stream={'filename': os.path.join(self.log_directory, 'licenseServer_stdout.log')},
 				stderr_stream={'filename': os.path.join(self.log_directory, 'licenseServer_stderr.log')},
