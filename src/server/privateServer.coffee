@@ -90,7 +90,7 @@ class PrivateServer
 							@logger.error error
 							response.send 500, error
 						else
-							@modelConnection.permissions.updateLicensePermissions license.licenseKey, permissions, (error) =>
+							@modelConnection.permissions.updateLicensePermissions license, permissions, (error) =>
 								if error?
 									@logger.error error
 									response.send 500, error
