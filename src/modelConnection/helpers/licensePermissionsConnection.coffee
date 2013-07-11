@@ -41,7 +41,7 @@ class LicensePermissionsConnection
 
 		@sqlPool.getConnection (error, connection) =>
 			if error? then callback error
-			else 
+			else
 				connection.query query, [licenseKey], (error, results) =>
 					connection.end()
 					if error? then callback error
@@ -54,7 +54,7 @@ class LicensePermissionsConnection
 	clearLicensePermissions: (license, callback) =>
 		@sqlPool.getConnection (error, connection) =>
 			if error? then callback error
-			else 
+			else
 				connection.query 'DELETE FROM license_permission WHERE license_id = ?', [license.id], (error, result) =>
 					connection.end()
 					callback error, result
@@ -63,7 +63,7 @@ class LicensePermissionsConnection
 	updateLicensePermissions: (license, permissions, callback) =>
 		@sqlPool.getConnection (error, connection) =>
 			if error? then callback error
-			else 
+			else
 				errors = []
 				await
 					for name, index in Object.keys permissions
@@ -72,7 +72,7 @@ class LicensePermissionsConnection
 
 						@sqlPool.getConnection (error, connection) =>
 							if error? then errors[index] = error
-							else 
+							else
 								connection.query query, [license.id, name, permissions[name], permissions[name]], defer errors[index]
 								connection.end()
 

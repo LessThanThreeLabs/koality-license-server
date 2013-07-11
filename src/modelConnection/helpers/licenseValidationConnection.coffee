@@ -19,7 +19,7 @@ class LicenseValidationConnection
 
 		@sqlPool.getConnection (error, connection) =>
 			if error? then callback error
-			else 
+			else
 				connection.query 'UPDATE license SET last_ping = ? WHERE id = ?', [now, license.id], (error, result) =>
 					connection.end()
 					callback error, result
@@ -28,7 +28,7 @@ class LicenseValidationConnection
 	_registerServerWithLicenseKey: (licenseKey, serverId, callback) =>
 		@sqlPool.getConnection (error, connection) =>
 			if error? then callback error
-			else 
+			else
 				connection.query 'UPDATE license SET server_id = ? where license_key = ?', [serverId, licenseKey], (error, result) =>
 					connection.end()
 					callback error, result
@@ -42,9 +42,6 @@ class LicenseValidationConnection
 				callback null, true
 			else
 				@logger.info 'Registering server: ' + serverId + ' for license key: ' + license.licenseKey
-
-				console.log license
-
 				@_registerServerWithLicenseKey license.licenseKey, serverId, (error) =>
 					if error? then callback error
 					else
@@ -130,7 +127,7 @@ class LicenseValidationConnection
 					else
 						@sqlPool.getConnection (error, connection) =>
 							if error? then callback error
-							else 
+							else
 								@_checkPayment connection, license, (error, result) =>
 									connection.end()
 									callback error, result
@@ -151,7 +148,7 @@ class LicenseValidationConnection
 
 		@sqlPool.getConnection (error, connection) =>
 			if error? then callback error
-			else 
+			else
 				connection.query query, [licenseKey], (error, results) =>
 					connection.end()
 
