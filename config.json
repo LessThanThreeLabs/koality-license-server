@@ -1,16 +1,16 @@
 {
 	"server": {
 
-		"private": {
-			"port": 9002,
+		"public": {
+			"port": 9001,
 
 			"certificates": {
 				"location": "ssl"
 			}
 		},
 
-		"public": {
-			"port": 9001,
+		"private": {
+			"port": 9002,
 
 			"certificates": {
 				"location": "ssl"
