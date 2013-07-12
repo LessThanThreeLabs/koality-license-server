@@ -19,12 +19,15 @@ class LicensePermissionsConnection
 				largestInstanceType: 'm1.medium'
 				parallelizationCap: 2
 				maxRepositoryCount: 3
+				adminApiAllowed: false
 		else if licenseType is 'silver'
 			permissions =
 				parallelizationCap: 16
+				adminApiAllowed: false
 		else if licenseType is 'gold'
 			permissions =
 				parallelizationCap: 64
+				adminApiAllowed: true
 		else
 			permissions = {}
 
