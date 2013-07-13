@@ -60,7 +60,7 @@ class PrivateServer
 				else
 					await
 						@modelConnection.permissions.getLicensePermissions licenseKey, defer permissionsError, permissions
-						@modelConnection.metadata.getLicenseMetadata licenseKey, defer metadataError, metadata						
+						@modelConnection.metadata.getLicenseMetadata licenseKey, defer metadataError, metadata
 
 					if permissionsError?
 						@logger.error error
@@ -79,7 +79,7 @@ class PrivateServer
 		licenseType = request.body?.type ? 'bronze'
 
 		if not licenseType? then response.send 400, 'Invalid license type'
-		else 
+		else
 			@modelConnection.permissions.getPermissionsFromLicenseType licenseType, (error, permissions) =>
 				if error?
 					@logger.error error
@@ -105,7 +105,7 @@ class PrivateServer
 
 		if not licenseKey? then response.send 400, 'Invalid license key'
 		else if not licenseType? then response.send 400, 'Invalid license type'
-		else 
+		else
 			@modelConnection.getLicenseFromKey licenseKey, (error, license) =>
 				if error?
 					@logger.error error
@@ -123,8 +123,7 @@ class PrivateServer
 		serverId = request.query?.serverId
 
 		if not licenseKey? then response.send 400, 'Invalid license key'
-		else if not serverId? then response.send 400, 'Invalid server id'
-		else 
+		else
 			@modelConnection.validation.validateLicenseKey licenseKey, serverId, (error, licenseResult) =>
 				if error?
 					@logger.error error

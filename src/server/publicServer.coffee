@@ -51,9 +51,8 @@ class PublicServer
 		userCount = request.query?.userCount
 
 		if not licenseKey? then response.send 400, 'Invalid license key'
-		else if not serverId? then response.send 400, 'Invalid server id'
 		else if not userCount? then response.send 400, 'Invalid user count'
-		else 
+		else
 			@modelConnection.validation.validateLicenseKey licenseKey, serverId, (error, licenseResult) =>
 				if error?
 					@logger.error error
