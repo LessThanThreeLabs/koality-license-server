@@ -51,7 +51,8 @@ class PrivateServer
 	_getLicenseHandler: (request, response) =>
 		licenseKey = @licenseKeySanitizer.getSanitizedKey request.query?.licenseKey
 
-		if not licenseKey? then response.send 400, 'Invalid license key'
+		if not licenseKey? or typeof licenseKey isnt 'string'
+			response.send 400, 'Invalid license key'
 		else
 			@modelConnection.getLicenseFromKey licenseKey, (error, license) =>
 				if error?
@@ -78,7 +79,8 @@ class PrivateServer
 	_generateLicenseHandler: (request, response) =>
 		licenseType = request.body?.type ? 'bronze'
 
-		if not licenseType? then response.send 400, 'Invalid license type'
+		if not licenseType? or typeof licenseType isnt 'string'
+			response.send 400, 'Invalid license type'
 		else
 			@modelConnection.permissions.getPermissionsFromLicenseType licenseType, (error, permissions) =>
 				if error?
@@ -103,8 +105,10 @@ class PrivateServer
 		licenseKey = @licenseKeySanitizer.getSanitizedKey request.body?.licenseKey
 		licenseType = request.body?.licenseType
 
-		if not licenseKey? then response.send 400, 'Invalid license key'
-		else if not licenseType? then response.send 400, 'Invalid license type'
+		if not licenseKey? or typeof licenseKey isnt 'string'
+			response.send 400, 'Invalid license key'
+		else if not licenseType? or typeof licenseType isnt 'string'
+			response.send 400, 'Invalid license type'
 		else
 			@modelConnection.getLicenseFromKey licenseKey, (error, license) =>
 				if error?
@@ -120,9 +124,12 @@ class PrivateServer
 
 	_licenseCheckHandler: (request, response) =>
 		licenseKey = @licenseKeySanitizer.getSanitizedKey request.query?.licenseKey
-		serverId = request.query?.serverId
+		serverId = if request.query?.serverId? then parseInt request.query?.serverId else null
 
-		if not licenseKey? then response.send 400, 'Invalid license key'
+		if not licenseKey? or typeof licenseKey isnt 'string'
+			response.send 400, 'Invalid license key'
+		else if serverId? and isNaN serverId  # serverId isn't necessary
+			response.send 400, 'Invalid server id'
 		else
 			@modelConnection.validation.validateLicenseKey licenseKey, serverId, (error, licenseResult) =>
 				if error?

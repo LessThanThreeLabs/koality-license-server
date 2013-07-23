@@ -47,11 +47,15 @@ class PublicServer
 
 	_licenseCheckHandler: (request, response) =>
 		licenseKey = @licenseKeySanitizer.getSanitizedKey request.query?.licenseKey
-		serverId = request.query?.serverId
-		userCount = request.query?.userCount
+		serverId = if request.query?.serverId? then parseInt request.query?.serverId else null
+		userCount = parseInt request.query?.userCount
 
-		if not licenseKey? then response.send 400, 'Invalid license key'
-		else if not userCount? then response.send 400, 'Invalid user count'
+		if not licenseKey? or typeof licenseKey isnt 'string'
+			response.send 400, 'Invalid license key'
+		else if serverId? and isNaN serverId  # serverId isn't necessary
+			response.send 400, 'Invalid server id'
+		else if not userCount? or isNaN userCount
+			response.send 400, 'Invalid user count'
 		else
 			@modelConnection.validation.validateLicenseKey licenseKey, serverId, (error, licenseResult) =>
 				if error?
