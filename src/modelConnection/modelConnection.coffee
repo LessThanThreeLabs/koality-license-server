@@ -105,9 +105,12 @@ class ModelConnection
 			else planData.trial_end = stripeCustomer.subscription.trial_end
 
 		setLicenseTypeInStripe = (license, stripeCustomer, callback) =>
+			# We can't charge for 0 users. Stripe gets mad
+			quantity = Math.max stripeCustomer.subscription?.quantity, 1
+
 			planData =
 				plan: licenseType + '_' + @configurationParams.stripe.planVersion
-				quantity: stripeCustomer.subscription?.quantity or 1  # We can't charge for 0 users. Stripe gets mad
+				quantity: quantity
 
 			if stripeCustomer.subscription?.trial_end? then setPlanDataWithOldTrialEnd stripeCustomer, planData
 			else if license.usedTrial then planData.trial_end = 'now'

@@ -38,7 +38,7 @@ class LicenseMetadataConnection
 			query = 'INSERT INTO license_metadata (license_id, name, value) VALUES (?, ?, ?)
 				ON DUPLICATE KEY UPDATE value = ?'
 			errors = []
-			
+
 			await
 				for name, index in Object.keys metadata
 					@sqlPool.getConnection (error, connection) =>
@@ -55,7 +55,9 @@ class LicenseMetadataConnection
 			else if not metadata.userCount?
 				callback()
 			else
-				newQuantity = metadata.userCount or 1  # Stripe gets mad if you try to charge for 0 users
+				# Stripe gets mad if you try to charge for 0 users
+				newQuantity = Math.max metadata.userCount, 1
+
 				@stripe.customers.retrieve license.stripeCustomerId, (error, customer) =>
 					if error? then callback error
 					else if customer.subscription.quantity is newQuantity then callback
