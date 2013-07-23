@@ -35,11 +35,12 @@ class LicenseMetadataConnection
 
 	setLicenseMetadata: (licenseKey, metadata, callback) =>
 		updateMetadata = (license) =>
+			query = 'INSERT INTO license_metadata (license_id, name, value) VALUES (?, ?, ?)
+				ON DUPLICATE KEY UPDATE value = ?'
 			errors = []
+			
 			await
 				for name, index in Object.keys metadata
-					query = 'INSERT INTO license_metadata (license_id, name, value) VALUES (?, ?, ?)
-						ON DUPLICATE KEY UPDATE value = ?'
 					@sqlPool.getConnection (error, connection) =>
 						if error? then errors[index] = error
 						else 
@@ -66,22 +67,24 @@ class LicenseMetadataConnection
 							if error? then callback error
 							else callback()
 
-		query = 'SELECT license.id as id,
-					license.type as type,
-					account.stripe_customer_id as stripeCustomerId 
-				FROM license
-				LEFT JOIN account ON
-					license.account_id = account.id WHERE
-					license_key = ?'
+		if Object.keys(metadata).length is 0 then callback()
+		else 
+			query = 'SELECT license.id as id,
+						license.type as type,
+						account.stripe_customer_id as stripeCustomerId 
+					FROM license
+					LEFT JOIN account ON
+						license.account_id = account.id WHERE
+						license_key = ?'
 
-		@sqlPool.getConnection (error, connection) =>
-			if error? then callback error
-			else 
-				connection.query query, [licenseKey], (error, results) =>
-					connection.end()
+			@sqlPool.getConnection (error, connection) =>
+				if error? then callback error
+				else 
+					connection.query query, [licenseKey], (error, results) =>
+						connection.end()
 
-					if error? then callback error
-					else if results.length isnt 1 then callback 'License key not found'
-					else
-						license = results[0]
-						updateMetadata license
+						if error? then callback error
+						else if results.length isnt 1 then callback 'License key not found'
+						else
+							license = results[0]
+							updateMetadata license

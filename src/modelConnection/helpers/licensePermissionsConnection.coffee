@@ -66,13 +66,14 @@ class LicensePermissionsConnection
 	updateLicensePermissions: (license, permissions, callback) =>
 		@sqlPool.getConnection (error, connection) =>
 			if error? then callback error
-			else
+			else if Object.keys(permissions).length is 0 then callback()
+			else 
+				query = 'INSERT INTO license_permission (license_id, name, value) VALUES (?, ?, ?)
+					ON DUPLICATE KEY UPDATE value = ?'
 				errors = []
+				
 				await
 					for name, index in Object.keys permissions
-						query = 'INSERT INTO license_permission (license_id, name, value) VALUES (?, ?, ?)
-							ON DUPLICATE KEY UPDATE value = ?'
-
 						@sqlPool.getConnection (error, connection) =>
 							if error? then errors[index] = error
 							else
