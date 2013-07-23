@@ -1,3 +1,5 @@
+require 'longjohn'
+
 fs = require 'fs'
 Logger = require 'koality-logger'
 
