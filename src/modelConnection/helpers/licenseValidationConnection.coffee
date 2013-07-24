@@ -60,14 +60,13 @@ class LicenseValidationConnection
 		handleNoSubscription = (license, customer, callback) =>
 			@licenseTypeSetter license, license.type, customer, (error) =>
 				if error? then callback error
-				else callback null, { isValid: true, licenseType: license.type, trialExpiration: null, unpaidExpiration: null }
+				else callback null, {isValid: true, licenseType: license.type, trialExpiration: null, unpaidExpiration: null}
 
 		handleTrial = (license, customer, callback) =>
-			if customer.active_card?.cvc_check
-				unpaidExpiration = null
-			else
-				unpaidExpiration = customer.subscription.trial_end
-			successResponse = { isValid: true, licenseType: license.type, trialExpiration: customer.subscription.trial_end, unpaidExpiration: unpaidExpiration }
+			if customer.active_card?.cvc_check then unpaidExpiration = null
+			else unpaidExpiration = customer.subscription.trial_end
+
+			successResponse = {isValid: true, licenseType: license.type, trialExpiration: customer.subscription.trial_end, unpaidExpiration: unpaidExpiration}
 			if not license.usedTrial
 				sqlConnection.query 'UPDATE license SET used_trial = true WHERE id = ?', [license.id], (error) =>
 					if error? then callback error
@@ -78,24 +77,26 @@ class LicenseValidationConnection
 		handleUnpaid = (license, customer, callback) =>
 			now = Math.round Date.now() / 1000
 			fifteenDaysFromNow = now + (60 * 60 * 24 * 15)
-			twelveHours = (60 * 60 * 12)
+			twelveHours = 60 * 60 * 12
+
 			if customer.subscription.trial_start isnt customer.subscription.trial_end and customer.current_period_start - customer.subscription.trial_end < twelveHours
-				callback null, { isValid: false, reason: 'Trial expired' }
+				callback null, {isValid: false, reason: 'Trial expired'}
 			else if not license.unpaidExpiration?
 				sqlConnection.query 'UPDATE license SET unpaid_expiration = ? WHERE id = ?', [fifteenDaysFromNow, license.id], (error) =>
 					if error? then callback error
-					else callback null, { isValid: true, licenseType: license.type, trialExpiration: null, unpaidExpiration: fifteenDaysFromNow }
+					else callback null, {isValid: true, licenseType: license.type, trialExpiration: null, unpaidExpiration: fifteenDaysFromNow}
 			else if now > license.unpaidExpiration
-				callback null, { isValid: false, reason: 'Subscription unpaid' }
+				callback null, {isValid: false, reason: 'Subscription unpaid'}
 			else
-				callback null, { isValid: true, licenseType: license.type, trialExpiration: null, unpaidExpiration: license.unpaidExpiration }
+				callback null, {isValid: true, licenseType: license.type, trialExpiration: null, unpaidExpiration: license.unpaidExpiration}
 
 		handlePaid = (license, callback) =>
 			if license.unpaidExpiration?
 				sqlConnection.query 'UPDATE license SET unpaid_expiration = ? WHERE id = ?', [null, license.id], (error) =>
-					if error? then callback error else callback null, { isValid: true, licenseType: license.type, trialExpiration: null, unpaidExpiration: null }
+					if error? then callback error
+					else callback null, { isValid: true, licenseType: license.type, trialExpiration: null, unpaidExpiration: null }
 			else
-				callback null, { isValid: true, licenseType: license.type, trialExpiration: null, unpaidExpiration: null }
+				callback null, {isValid: true, licenseType: license.type, trialExpiration: null, unpaidExpiration: null}
 
 		if not license.stripeCustomerId?
 			callback null, {isValid: false, reason: 'No subscription information'}
