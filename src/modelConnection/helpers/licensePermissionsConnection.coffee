@@ -68,18 +68,19 @@ class LicensePermissionsConnection
 			if error? then callback error
 			else if Object.keys(permissions).length is 0 then callback()
 			else 
-				query = 'INSERT INTO license_permission (license_id, name, value) VALUES (?, ?, ?)
-					ON DUPLICATE KEY UPDATE value = ?'
-				errors = []
+				query = 'INSERT INTO license_permission (license_id, name, value) VALUES ?
+					ON DUPLICATE KEY UPDATE value = VALUES(value)'
 				
-				await
-					for name, index in Object.keys permissions
-						@sqlPool.getConnection (error, connection) =>
-							if error? then errors[index] = error
-							else
-								connection.query query, [license.id, name, permissions[name], permissions[name]], defer errors[index]
-								connection.end()
+				getBulkQueryParams = () =>
+					queryParams = []
+					for name, value of permissions
+						queryParams.push [license.id, name, value]
+					return queryParams
 
-				errors = (error for error in errors when error?)
-				if errors.length > 0 then callback errors[0]
-				else callback()
+				@sqlPool.getConnection (error, connection) =>
+					if error? then callback error
+					else
+						connection.query query, [getBulkQueryParams()], (error) =>
+							connection.end()
+							if error? then callback error
+							else callback()

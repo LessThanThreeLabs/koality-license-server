@@ -34,43 +34,7 @@ class LicenseMetadataConnection
 
 
 	setLicenseMetadata: (licenseKey, metadata, callback) =>
-		updateMetadata = (license) =>
-			query = 'INSERT INTO license_metadata (license_id, name, value) VALUES (?, ?, ?)
-				ON DUPLICATE KEY UPDATE value = ?'
-			errors = []
-
-			await
-				for name, index in Object.keys metadata
-					@sqlPool.getConnection (error, connection) =>
-						if error? then errors[index] = error
-						else
-							connection.query query, [license.id, name, metadata[name], metadata[name]], defer errors[index]
-							connection.end()
-
-			errors = (error for error in errors when error?)
-			if errors.length > 0
-				callback errors[0]
-			else if license.type in ['enterprise', 'internal']
-				callback()
-			else if not metadata.userCount?
-				callback()
-			else
-				# Stripe gets mad if you try to charge for 0 users
-				newQuantity = Math.max metadata.userCount, 1
-
-				@stripe.customers.retrieve license.stripeCustomerId, (error, customer) =>
-					if error? then callback error
-					else if customer.subscription.quantity is newQuantity then callback()
-					else
-						planData =
-							plan: customer.subscription.plan.id
-							quantity: newQuantity
-						@stripe.customers.update_subscription license.stripeCustomerId, planData, (error, results) =>
-							if error? then callback error
-							else callback()
-
-		if Object.keys(metadata).length is 0 then callback()
-		else
+		getLicense = (callback) =>
 			query = 'SELECT license.id as id,
 						license.type as type,
 						account.stripe_customer_id as stripeCustomerId
@@ -88,5 +52,43 @@ class LicenseMetadataConnection
 						if error? then callback error
 						else if results.length isnt 1 then callback 'License key not found'
 						else
-							license = results[0]
-							updateMetadata license
+							callback null, results[0]
+
+		updateMetadata = (license) =>
+			query = 'INSERT INTO license_metadata (license_id, name, value) VALUES ?
+				ON DUPLICATE KEY UPDATE value = VALUES(value)'
+
+			getBulkQueryParams = () =>
+				queryParams = []
+				for name, value of metadata
+					queryParams.push [license.id, name, value]
+				return queryParams
+
+			@sqlPool.getConnection (error, connection) =>
+				if error? then callback error
+				else
+					connection.query query, [getBulkQueryParams()], (error) =>
+						connection.end()
+						if error? then callback error
+						else if license.type in ['enterprise', 'internal'] then callback()
+						else if not metadata.userCount? then callback()
+						else 
+							# Stripe gets mad if you try to charge for 0 users
+							newQuantity = Math.max metadata.userCount, 1
+
+							@stripe.customers.retrieve license.stripeCustomerId, (error, customer) =>
+								if error? then callback error
+								else if customer.subscription.quantity is newQuantity then callback()
+								else
+									planData =
+										plan: customer.subscription.plan.id
+										quantity: newQuantity
+									@stripe.customers.update_subscription license.stripeCustomerId, planData, (error, results) =>
+										if error? then callback error
+										else callback()
+
+		if Object.keys(metadata).length is 0 then callback()
+		else
+			getLicense (error, license) =>
+				if error? then callback error
+				else updateMetadata license
