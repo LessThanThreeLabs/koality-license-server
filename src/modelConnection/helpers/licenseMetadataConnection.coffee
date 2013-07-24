@@ -48,13 +48,10 @@ class LicenseMetadataConnection
 				else
 					connection.query query, [licenseKey], (error, results) =>
 						connection.end()
-
 						if error? then callback error
-						else if results.length isnt 1 then callback 'License key not found'
-						else
-							callback null, results[0]
+						else callback null, results[0]
 
-		updateMetadata = (license) =>
+		updateMetadata = (license, callback) =>
 			query = 'INSERT INTO license_metadata (license_id, name, value) VALUES ?
 				ON DUPLICATE KEY UPDATE value = VALUES(value)'
 
@@ -91,4 +88,5 @@ class LicenseMetadataConnection
 		else
 			getLicense (error, license) =>
 				if error? then callback error
-				else updateMetadata license
+				else if not license? then callback null, 'License key not found'
+				else updateMetadata license, callback

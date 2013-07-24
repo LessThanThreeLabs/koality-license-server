@@ -115,7 +115,30 @@ class LicenseValidationConnection
 
 
 	validateLicenseKey: (licenseKey, serverId, callback) =>
-		handleLicense = (license) =>
+		getLicense = (callback) =>
+			query = 'SELECT license.id,
+					license.is_valid as isValid,
+					license.server_id as serverId,
+					license.type as type,
+					license.used_trial as usedTrial,
+					license.unpaid_expiration as unpaidExpiration,
+					license.last_ping as lastPing,
+					license.license_key as licenseKey,
+					account.stripe_customer_id as stripeCustomerId
+				FROM license
+				LEFT JOIN account ON
+					license.account_id = account.id WHERE
+					license_key = ?'
+
+			@sqlPool.getConnection (error, connection) =>
+				if error? then callback error
+				else
+					connection.query query, [licenseKey], (error, results) =>
+						connection.end()
+						if error? then callback error
+						else callback null, results[0]
+
+		handleLicense = (license, callback) =>
 			if not license.isValid
 				callback null, {isValid: false, reason: 'License key deactivated'}
 			else
@@ -133,29 +156,7 @@ class LicenseValidationConnection
 									connection.end()
 									callback error, result
 
-		query = 'SELECT license.id,
-					license.is_valid as isValid,
-					license.server_id as serverId,
-					license.type as type,
-					license.used_trial as usedTrial,
-					license.unpaid_expiration as unpaidExpiration,
-					license.last_ping as lastPing,
-					license.license_key as licenseKey,
-					account.stripe_customer_id as stripeCustomerId
-				FROM license
-				LEFT JOIN account ON
-					license.account_id = account.id WHERE
-					license_key = ?'
-
-		@sqlPool.getConnection (error, connection) =>
+		getLicense (error, license) =>
 			if error? then callback error
-			else
-				connection.query query, [licenseKey], (error, results) =>
-					connection.end()
-
-					if error? then callback error
-					else if results.length isnt 1
-						callback null, {isValid: false, reason: 'Invalid license key'}
-					else
-						license = results[0]
-						handleLicense license
+			else if not license? then callback null, {isValid: false, reason: 'Invalid license key'}
+			else handleLicense license, callback
