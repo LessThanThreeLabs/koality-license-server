@@ -39,9 +39,7 @@
 
 	"mailer": {
 		"mailgun": {
-			"name": "koality-license-server",
-			"user": "postmaster@koalitycode.com",
-			"password": "41acnysnz3s9"
+			"apiKey": "key-9e06ajco0xurqnioji-egwuwajg4jrn2"
 		},
 
 		"logger": {
