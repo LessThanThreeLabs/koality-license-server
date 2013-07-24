@@ -12,8 +12,6 @@ PrivateServer = require './server/privateServer'
 PublicServer = require './server/publicServer'
 
 startEverything = () ->
-	process.title = 'license-server'
-
 	commandLineParser = CommandLineParser.create()
 
 	configurationParams = getConfiguration commandLineParser.getConfigFile(), 
