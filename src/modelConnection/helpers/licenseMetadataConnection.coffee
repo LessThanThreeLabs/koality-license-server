@@ -23,11 +23,11 @@ class LicenseMetadataConnection
 
 		@sqlPool.getConnection (error, connection) =>
 			if error? then callback error
-			else 
+			else
 				connection.query query, [licenseKey], (error, results) =>
 					connection.end()
 					if error? then callback error
-					else 
+					else
 						permissions = {}
 						permissions[result.name] = result.value for result in results
 						callback null, permissions
@@ -43,7 +43,7 @@ class LicenseMetadataConnection
 				for name, index in Object.keys metadata
 					@sqlPool.getConnection (error, connection) =>
 						if error? then errors[index] = error
-						else 
+						else
 							connection.query query, [license.id, name, metadata[name], metadata[name]], defer errors[index]
 							connection.end()
 
@@ -60,8 +60,8 @@ class LicenseMetadataConnection
 
 				@stripe.customers.retrieve license.stripeCustomerId, (error, customer) =>
 					if error? then callback error
-					else if customer.subscription.quantity is newQuantity then callback
-					else 
+					else if customer.subscription.quantity is newQuantity then callback()
+					else
 						planData =
 							plan: customer.subscription.plan.id
 							quantity: newQuantity
@@ -70,10 +70,10 @@ class LicenseMetadataConnection
 							else callback()
 
 		if Object.keys(metadata).length is 0 then callback()
-		else 
+		else
 			query = 'SELECT license.id as id,
 						license.type as type,
-						account.stripe_customer_id as stripeCustomerId 
+						account.stripe_customer_id as stripeCustomerId
 					FROM license
 					LEFT JOIN account ON
 						license.account_id = account.id WHERE
@@ -81,7 +81,7 @@ class LicenseMetadataConnection
 
 			@sqlPool.getConnection (error, connection) =>
 				if error? then callback error
-				else 
+				else
 					connection.query query, [licenseKey], (error, results) =>
 						connection.end()
 
