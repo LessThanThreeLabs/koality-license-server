@@ -6,9 +6,6 @@ setup:
     - npm install
 test:
   scripts:
-    - launch server test:
-        - |
-          iced server.coffee &
-          serverPid=$!
-          sleep 5
-          kill -9 $serverPid
+    - unit tests:
+        script:
+          - npm test
