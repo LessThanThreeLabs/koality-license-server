@@ -39,7 +39,8 @@
 
 	"mailer": {
 		"mailgun": {
-			"apiKey": "key-9e06ajco0xurqnioji-egwuwajg4jrn2"
+			"user": "postmaster@koalitycode.com",
+			"password": "41acnysnz3s9"
 		},
 
 		"logger": {
