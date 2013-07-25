@@ -21,8 +21,10 @@ describe 'webserver', () ->
 			successfullyStarted = true
 
 			handleWebserverFailure = (data) ->
-				clearTimeout timer
-				killWebserverProcess()
+				console.log 'data: ' + data
+
+				# clearTimeout timer
+				# killWebserverProcess()
 
 				successfullyStarted = false if not flag
 				flag = true
