@@ -1,9 +1,16 @@
+--- #Koality: 0.1.5
 languages:
   nodejs: 0.8.12
 setup:
-- packages:
-  - npm:
-    - npm install
+  - packages:
+    - npm:
+      - iced-coffee-script
+      - grunt-cli
+      - jasmine-node
+      - npm install
+compile:
+  scripts:
+    - grunt compile
 test:
   scripts:
     - unit tests:
