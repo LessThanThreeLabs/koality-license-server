@@ -8,6 +8,11 @@ setup:
       - grunt-cli
       - jasmine-node
       - npm install
+    - databases:
+      - mysql:
+        - name: license
+          username: root
+          password: tentacles
 compile:
   scripts:
     - grunt compile
