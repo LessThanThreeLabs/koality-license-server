@@ -61,7 +61,7 @@ class ModelConnection
 
 				@sqlPool.getConnection (error, connection) =>
 					if error? then callback error
-					else 
+					else
 						connection.query query, params, (error, results) =>
 							connection.end()
 							if error? then callback error
@@ -71,25 +71,25 @@ class ModelConnection
 
 
 	getLicenseFromKey: (licenseKey, callback) =>
-		query = 'SELECT license.id as id, 
-					account_id as accountId, 
-					license.type as type, 
-					license.used_trial as usedTrial, 
+		query = 'SELECT license.id as id,
+					account_id as accountId,
+					license.type as type,
+					license.used_trial as usedTrial,
 					license.license_key as licenseKey,
 					server_id as serverId,
 					is_valid as isValid,
 					account.stripe_customer_id as stripeCustomerId,
-					used_trial as usedTrial, 
-					unpaid_expiration as unpaidExpiration, 
+					used_trial as usedTrial,
+					unpaid_expiration as unpaidExpiration,
 					last_ping as lastPing
 				FROM license
 				LEFT JOIN account ON
 					license.account_id = account.id WHERE
-					license_key = ?'	
+					license_key = ?'
 
 		@sqlPool.getConnection (error, connection) =>
 			if error? then callback error
-			else 
+			else
 				connection.query query, [licenseKey], (error, results) =>
 					connection.end()
 					if error? then callback error
@@ -106,7 +106,8 @@ class ModelConnection
 
 		setLicenseTypeInStripe = (license, stripeCustomer, callback) =>
 			# We can't charge for 0 users. Stripe gets mad
-			quantity = Math.max stripeCustomer.subscription?.quantity, 1
+			oldQuantity = if stripeCustomer.subscription?.quantity? then stripeCustomer.subscription?.quantity else 0
+			quantity = Math.max oldQuantity, 1
 
 			planData =
 				plan: licenseType + '_' + @configurationParams.stripe.planVersion
@@ -122,7 +123,7 @@ class ModelConnection
 		setLicenseTypeInDb = (license, permissions, callback) =>
 			@sqlPool.getConnection (error, connection) =>
 				if error? then callback error
-				else 
+				else
 					connection.query 'UPDATE license SET type = ? WHERE license_key = ?', [licenseType, license.licenseKey], (error, results) =>
 						connection.end()
 						if error? then callback error
@@ -132,7 +133,7 @@ class ModelConnection
 								if error? then callback error
 								else @permissions.updateLicensePermissions license, permissions, callback
 
-		await 
+		await
 			@stripe.customers.retrieve license.stripeCustomerId, defer stripeError, stripeCustomer
 			@permissions.getPermissionsFromLicenseType licenseType, defer permissionsError, permissions
 
