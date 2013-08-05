@@ -26,7 +26,7 @@
 		"mysqlConnectionParams": {
 			"host": "127.0.0.1",
 			"database": "license",
-			"user": "root",
+			"user": "lt3",
 			"password": "tentacles",
 			"port": "3306"
 		},
