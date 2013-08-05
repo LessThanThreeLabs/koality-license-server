@@ -1,13 +1,13 @@
 {
 	"name": "koality-license-server",
-	"version": "0.1.0",
+	"version": "0.2.0",
 
 	"dependencies": {
 		"colors": "0.6.0",
     	"commander": "1.1.1",
 		"express": "3.0.5",
 		"iced-coffee-script": "1.6.3b",
-		"koality-logger": "https://s3.amazonaws.com/koality_code/libraries/private-cd855575be99a357/koality-logger-0.0.1.tgz",
+		"koality-logger": "https://s3.amazonaws.com/koality_code/libraries/private-cd855575be99a357/koality-logger-0.2.0.tgz",
 		"longjohn": "0.2.1",
 		"mysql": "2.0.x",
 		"nodemailer": "0.5.0",
