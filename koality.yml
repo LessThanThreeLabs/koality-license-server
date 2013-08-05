@@ -11,7 +11,7 @@ setup:
   - databases:
     - mysql:
       - name: license
-        username: root
+        username: lt3
         password: tentacles
 compile:
   scripts:

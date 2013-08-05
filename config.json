@@ -24,9 +24,9 @@
 		"schemaFile": "schema.sql",
 
 		"mysqlConnectionParams": {
-			"host": "127.0.0.1",
+			"host": "localhost",
 			"database": "license",
-			"user": "root",
+			"user": "lt3",
 			"password": "tentacles",
 			"port": "3306"
 		},
