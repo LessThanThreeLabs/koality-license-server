@@ -21,11 +21,13 @@ describe 'webserver', () ->
 			successfullyStarted = true
 
 			handleWebserverFailure = (data) ->
-				clearTimeout timer
-				killWebserverProcess()
+				console.log data.toString()
+
+				# clearTimeout timer
+				# killWebserverProcess()
 
 				successfullyStarted = false if not flag
-				flag = true
+				# flag = true
 
 			webserver.stderr.on 'data', handleWebserverFailure
 			webserver.on 'close', handleWebserverFailure
