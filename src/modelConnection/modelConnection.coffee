@@ -96,6 +96,7 @@ class ModelConnection
 					else if results.length isnt 1 then callback 404, 'No such license key'
 					else callback null, results[0]
 
+
 	setLicenseType: (license, licenseType, callback) =>
 		setPlanDataWithOldTrialEnd = (stripeCustomer, planData) =>
 			# Setting the trial end in the past is invalid

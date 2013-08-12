@@ -1,6 +1,6 @@
 {
 	"name": "koality-license-server",
-	"version": "0.2.0",
+	"version": "0.3.0",
 
 	"dependencies": {
 		"colors": "0.6.0",

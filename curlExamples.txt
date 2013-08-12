@@ -29,7 +29,8 @@ curl --request GET --insecure 'https://127.0.0.1:9002/license/check?licenseKey=F
 
 GENERATE LICENSE KEY
 curl --request POST --insecure 'https://127.0.0.1:9002/license/generate'
-curl --request POST --insecure 'https://127.0.0.1:9002/license/generate' --data 'licenseType=bronze'
+curl --request POST --insecure 'https://127.0.0.1:9002/license/generate' --data 'type=bronze'
+curl --request POST --insecure 'https://127.0.0.1:9002/license/generate' --data 'type=internal'
 
 SET LICENSE TYPE
 curl --request PUT --insecure 'https://127.0.0.1:9002/license/type'
