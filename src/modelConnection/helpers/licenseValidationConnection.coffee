@@ -58,7 +58,7 @@ class LicenseValidationConnection
 
 	_checkPayment: (sqlConnection, license, callback) =>
 		handleNoSubscription = (license, customer, callback) =>
-			@licenseTypeSetter license, license.type, customer, (error) =>
+			@licenseTypeSetter license, license.type, (error) =>
 				if error? then callback error
 				else callback null, {isValid: true, licenseType: license.type, trialExpiration: null, unpaidExpiration: null}
 
