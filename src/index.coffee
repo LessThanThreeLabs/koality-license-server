@@ -23,7 +23,7 @@ startEverything = () ->
 
 	mailer = Mailer.create configurationParams.mailer
 
-	logger = Logger.create mailer.logger, 'warn'
+	logger = Logger.create mailer.logger, 'warn', process.env.NODE_ENV is 'production'
 
 	process.on 'uncaughtException', (error) ->
 		logger.error error, true
