@@ -4,3 +4,4 @@ koality-license-server-*.tgz
 node_modules/
 src/
 test/
+testResults/
