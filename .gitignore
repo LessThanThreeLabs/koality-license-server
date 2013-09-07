@@ -1,4 +1,4 @@
-node_modules/
-libs/
-testResults/
+/node_modules/
+/libs/
+/testResults/
 koality-license-server-*.tgz
