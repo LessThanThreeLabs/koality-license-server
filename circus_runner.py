@@ -10,7 +10,7 @@ except ImportError:
 	print "Couldn't import circus, attempting to download and retry."
 	try:
 		import subprocess
-		subprocess.call(['pip', 'install', 'circus==0.7.1'])
+		subprocess.call(['pip', 'install', 'circus==0.11.1'])
 		from circus.arbiter import Arbiter
 		from circus.watcher import Watcher
 	except:
@@ -35,7 +35,7 @@ class LicenseServerCircusRunner(object):
 			# LICENSE SERVER
 			Watcher(
 				name='license-server',
-				cmd='/usr/bin/node',
+				cmd='node',
 				args=['--harmony', os.path.join(self.root_directory, 'libs', 'index.js'), '--mode', 'production'],
 				working_dir=self.root_directory,
 				stdout_stream={'filename': os.path.join(self.log_directory, 'licenseServer_stdout.log')},

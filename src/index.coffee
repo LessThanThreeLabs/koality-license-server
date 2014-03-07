@@ -14,7 +14,7 @@ PublicServer = require './server/publicServer'
 startEverything = () ->
 	commandLineParser = CommandLineParser.create()
 
-	configurationParams = getConfiguration commandLineParser.getConfigFile(), 
+	configurationParams = getConfiguration commandLineParser.getConfigFile(),
 		commandLineParser.getMode(),
 		commandLineParser.getPrivatePort(),
 		commandLineParser.getPublicPort()

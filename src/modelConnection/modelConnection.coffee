@@ -70,6 +70,38 @@ class ModelConnection
 								licenseKey: licenseKey
 
 
+	getLicenses: (callback) =>
+		query = 'SELECT license.id as id,
+					account_id as accountId,
+					license.type as type,
+					license.used_trial as usedTrial,
+					license.license_key as licenseKey,
+					license.server_id as serverId,
+					license.is_valid as isValid,
+					account.stripe_customer_id as stripeCustomerId,
+					license.unpaid_expiration as unpaidExpiration,
+					license_permission.name as permissionName,
+					license_permission.value as permissionValue,
+					license_metadata.name as metadataName,
+					license_metadata.value as metadataValue,
+					last_ping as lastPing
+				FROM license
+				LEFT JOIN account ON
+					license.account_id = account.id
+				LEFT JOIN license_permission ON
+					license.id = license_permission.license_id
+				LEFT JOIN license_metadata ON
+					license.id = license_metadata.license_id'
+
+		@sqlPool.getConnection (error, connection) =>
+			if error? then callback error
+			else
+				connection.query query, (error, results) =>
+					connection.end()
+					if error? then callback error
+					else callback null, results
+
+
 	getLicenseFromKey: (licenseKey, callback) =>
 		query = 'SELECT license.id as id,
 					account_id as accountId,

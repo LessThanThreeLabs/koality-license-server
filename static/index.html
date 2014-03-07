@@ -1,0 +1,28 @@
+<html ng-app="myApp">
+	<head>
+		<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootswatch/3.0.3/slate/bootstrap.min.css" media="screen" />
+		<link rel="stylesheet" href="css/trNgGrid.min.css" />
+	    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.9/angular.min.js"></script>
+	    <script src="js/trNgGrid.min.js"></script>
+		<script src="js/dashboard.js"></script>
+	</head>
+
+	<body>
+		<h1 style='text-align:center;'>License Dashboard</h1>
+		<table id="licenses" ng-controller="LicenseViewerController" tr-ng-grid="" items="licenses" selection-mode="None">
+
+			<thead>
+				<tr>
+					<th field-name="id" display-name="Id" enable-filtering="true" enable-sorting="true"></th>
+					<th field-name="type" display-name="Type" enable-filtering="true" enable-sorting="true"></th>
+					<th field-name="licenseKey" display-name="License Key" enable-filtering="true" enable-sorting="true"></th>
+					<th field-name="serverId" display-name="Server Id" enable-filtering="true" enable-sorting="true"></th>
+					<th field-name="isValid" display-name="Valid" enable-filtering="true" enable-sorting="true"></th>
+					<th field-name="lastPing" display-format="date:'medium'" enable-filtering="true" enable-sorting="true"></th>
+					<th field-name="userCount" display-name="User Count" enable-filtering="true" enable-sorting="true"></th>
+				</tr>
+			</thead>
+		</table>
+	</body>
+
+</html>

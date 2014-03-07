@@ -26,8 +26,10 @@ class PrivateServer
 			expressServer.get '/license/check', @_licenseCheckHandler
 			expressServer.post '/license/generate', @_generateLicenseHandler
 			expressServer.put '/license/type', @_setLicenseTypeHandler
-			expressServer.get '*', (request, response) =>
-				response.send 404, '404'
+			expressServer.get '/licenses', @_getLicensesHandler
+			expressServer.use express.static __dirname + '/../../static'
+			# expressServer.get '*', (request, response) =>
+			# 	response.send 404, '404'
 
 		expressServer = express()
 		expressServer.use express.query()
@@ -46,6 +48,15 @@ class PrivateServer
 
 		@logger.info 'private server started'
 		console.log "PRIVATE SERVER STARTED on port #{@configurationParams.port}".bold.magenta
+
+
+	_getLicensesHandler: (request, response) =>
+		@modelConnection.getLicenses (error, licenses) =>
+			if error?
+				@logger.error error
+				response.send 500, error
+			else
+				response.json licenses
 
 
 	_getLicenseHandler: (request, response) =>
