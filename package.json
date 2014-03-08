@@ -7,6 +7,7 @@
     	"commander": "1.1.1",
 		"express": "3.0.5",
 		"iced-coffee-script": "1.6.3b",
+		"iced-runtime": "1.0.1",
 		"koality-logger": "https://s3.amazonaws.com/koality_code/libraries/private-cd855575be99a357/koality-logger-0.3.0.tgz",
 		"longjohn": "0.2.1",
 		"mysql": "2.0.x",

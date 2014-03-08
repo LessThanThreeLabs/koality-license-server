@@ -2,14 +2,22 @@
 	<head>
 		<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootswatch/3.0.3/slate/bootstrap.min.css" media="screen" />
 		<link rel="stylesheet" href="css/trNgGrid.min.css" />
-	    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.9/angular.min.js"></script>
-	    <script src="js/trNgGrid.min.js"></script>
+		<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.9/angular.min.js"></script>
+		<script src="js/trNgGrid.min.js"></script>
 		<script src="js/dashboard.js"></script>
 	</head>
 
-	<body>
+	<body ng-controller="LicenseViewerController">
 		<h1 style='text-align:center;'>License Dashboard</h1>
-		<table id="licenses" ng-controller="LicenseViewerController" tr-ng-grid="" items="licenses" selection-mode="None">
+		<div style='text-align:center;'>
+			<select class='form-control' ng-model='newlicensetype' style='width:100px;display:inline;'>
+				<option value='{{typeoption}}' ng-repeat='typeoption in ["bronze", "silver", "gold", "enterprise", "internal"]' ng-selected='typeoption == "enterprise"'>
+				{{typeoption}}
+				</option>
+			</select>
+			<button class='btn btn-default' ng-click='makeLicense()'>Create new license</button>
+		</div>
+		<table id="licenses" tr-ng-grid="" items="licenses" selection-mode="None">
 
 			<thead>
 				<tr>
